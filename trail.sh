@@ -5,7 +5,7 @@ flag_l=false
 flag_m=false
 flag_r=false
 
-while getopts "an:h:u:p:ld:mn:r:" opt; do
+while getopts "anhupldmr:" opt; do
   case $opt in
     a)
       echo "Option 'a' is set."

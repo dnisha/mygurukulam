@@ -18,7 +18,7 @@ flag_m=false
 flag_r=false
 flag_d=false
 
-while getopts "an:h:u:p:ld:mn:r:" opt; do
+while getopts "an:h:u:p:ld:mn:r:i:" opt; do
   case $opt in
     a)
       echo "Option 'a' is set."
@@ -55,6 +55,7 @@ while getopts "an:h:u:p:ld:mn:r:" opt; do
     r)
       echo "Option 'r' is set."
       flag_r=true
+      r=$OPTARG
       ;;
     i)
       echo "Option 'i' is set."
@@ -66,17 +67,15 @@ while getopts "an:h:u:p:ld:mn:r:" opt; do
   esac
 done 2>/dev/null
 
-echo "OPTION A=$a N=$n H=$h U=$u P=$p I=$i R=$r L=$l"
 USER_NAME_SERVER_IP=${u}@${h}
 USER_NAME=${u}
 SERVER_NAME=${n}
 PORT=${p}
 PEM_FILE=${i}
+SERVER_TO_REMOVE=${r}
 
 if $flag_a; then
-    echo "Flag 'a' is used."
     if [ $flag_a ] && [ ! -z {$n} ] && [ ! -z ${h} ] && [ ! -z ${u} ] && [ -z ${p} ] && [ -z ${i} ]; then
-        echo "performing add operation"
         ssh ${USER_NAME_SERVER_IP}
         echo -e "${RED}[ERROR]:${NC} ${SERVER_NAME} information is not available, please add server first" >> ${LOG_FILE}
         store_connection_details ${SERVER_NAME} ${USER_NAME_SERVER_IP}
@@ -86,7 +85,7 @@ if $flag_a; then
         echo -e "${RED}[ERROR]:${NC} ${SERVER_NAME} information is not available, please add server first" >> ${LOG_FILE}
         store_connection_details ${SERVER_NAME} ${USER_NAME_SERVER_IP} ${PORT}
 
-    elif [ $flag_a ] && [ ! -z {$n} ] && [ ! -z ${h} ] && [ ! -z ${u} ] && [ ! -z ${p} ] && [ ! -z ${-i} ]; then
+    elif [ $flag_a ] && [ ! -z {$n} ] && [ ! -z ${h} ] && [ ! -z ${u} ] && [ ! -z ${p} ] && [ ! -z ${i} ]; then
         ssh -p ${PORT} -i ${PEM_FILE} ${USER_NAME_SERVER_IP}  
         echo -e "${GREEN}Connecting${NC} to ${SERVER_NAME} on ${PORT} port as ${USER_NAME} via ${PEM_FILE} key" >> ${LOG_FILE}
         store_connection_details ${SERVER_NAME} ${USER_NAME_SERVER_IP} ${PORT} ${PEM_FILE}
@@ -94,7 +93,7 @@ if $flag_a; then
 fi
 
 if $flag_l; then
-    echo "Flag 'l' is used"
+
     if [ ${NUMBER_OF_ARG} -eq 1 ]; then
         cat ${CONNECTION_FILE}
     elif [ flag_d ]; then
@@ -103,12 +102,11 @@ if $flag_l; then
 fi
 
 if $flag_m; then
-    echo "Flag 'm' is used "
-    if [ ${NUMBER_OF_ARG} -eq 7 ]; then
-        sed -i -e "s/\(${SERVER_NAME}: ssh \).*/\1${USER_NAME_WITH_IP}/" ${DETAILED_CONNECTION_FILE}
+    if [ ! -z {$n} ] && [ ! -z ${h} ] && [ ! -z ${u} ] && [ -z ${p} ]; then
+        sed -i -e "s/\(${SERVER_NAME}: ssh \).*/\1${USER_NAME_SERVER_IP}/" ${DETAILED_CONNECTION_FILE}
 
-    elif [ $NUMBER_OF_ARG -eq 9 ]; then
-        sed -i -e "s/\(${SERVER_NAME}: ssh -p 2022 \).*/\1${USER_NAME_WITH_IP}/" ${DETAILED_CONNECTION_FILE} 
+    elif [ ! -z {$n} ] && [ ! -z ${h} ] && [ ! -z ${u} ] && [ ! -z ${p} ]; then
+        sed -i -e "s/\(${SERVER_NAME}: ssh -p 2022 \).*/\1${USER_NAME_SERVER_IP}/" ${DETAILED_CONNECTION_FILE} 
 
     else
         echo "incorrect arguments are passed..!"
@@ -117,6 +115,11 @@ if $flag_m; then
 fi
 
 if $flag_r; then
-  echo "Flag 'r' is used with value: $username"
+    if [ ${NUMBER_OF_ARG} -eq 2 ]; then
+        awk "!/${SERVER_TO_REMOVE}/" ${CONNECTION_FILE} > tmpfile && mv tmpfile ${CONNECTION_FILE} 
+   
+    else
+        echo "incorrect arguments are passed..!"
+    fi
 fi
 
