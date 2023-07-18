@@ -95,11 +95,19 @@ fi
 
 if [ ${flag_a} = false ] && [ ${flag_l} = false ] && [ ${flag_m} = true ] && [ ${flag_r} = false ]; then
 
-    if [ ! -z {$n} ] && [ ! -z ${h} ] && [ ! -z ${u} ] && [ -z ${p} ]; then
-        sed -i -e "s/\(${SERVER_NAME}: ssh \).*/\1${USER_NAME_SERVER_IP}/" ${DETAILED_CONNECTION_FILE}
+    TEMP_FILE="temp_file.txt"
 
-    elif [ ! -z {$n} ] && [ ! -z ${h} ] && [ ! -z ${u} ] && [ ! -z ${p} ]; then
-        sed -i -e "s/\(${SERVER_NAME}: ssh -p 2022 \).*/\1${USER_NAME_SERVER_IP}/" ${DETAILED_CONNECTION_FILE} 
+    if [ ! -z {$n} ] && [ ! -z ${h} ] && [ ! -z ${u} ] && [ -z ${p} ] && [ -z ${i} ]; then
+        awk -v server_name=${SERVER_NAME} -v new_ip_address=${HOST} -v new_user=${USER_NAME} -F: '{ if (($1 == server_name && length($5) != 0 ) || ($1 == server_name && length($4) != 0)) { $5 = new_ip_address ; $4 = new_user } ; print $1 ":" $2 ":" $3 ":" $4 ":" $5 }' ${CONNECTION_FILE} > ${TEMP_FILE}
+        mv ${TEMP_FILE} ${CONNECTION_FILE}
+
+    elif [ ! -z {$n} ] && [ ! -z ${h} ] && [ ! -z ${u} ] && [ ! -z ${p} ] && [ -z ${i} ]; then
+        awk -v server_name=${SERVER_NAME} -v new_ip_address=${HOST} -v new_user=${USER_NAME} -v new_port=${PORT} -F: '{ if (($1 == server_name && length($5) != 0 ) || ($1 == server_name && length($4) != 0) || ($1 == server_name && length($3) != 0) ) { $5 = new_ip_address ; $4 = new_user ; $3 =  new_port } ; print $1 ":" $2 ":" $3 ":" $4 ":" $5 }' ${CONNECTION_FILE} > ${TEMP_FILE}
+        mv ${TEMP_FILE} ${CONNECTION_FILE}
+
+    elif [ ! -z {$n} ] && [ ! -z ${h} ] && [ ! -z ${u} ] && [ ! -z ${p} ] && [ ! -z ${i} ]; then
+        awk -v server_name=${SERVER_NAME} -v new_ip_address=${HOST} -v new_user=${USER_NAME} -v new_port=${PORT} -v new_file=${PEM_FILE} -F: '{ if (($1 == server_name && length($5) != 0 ) || ($1 == server_name && length($4) != 0) || ($1 == server_name && length($3) != 0) || ($1 == server_name && length($2) != 0) ) { $5 = new_ip_address ; $4 = new_user ; $3 =  new_port ; $2 = new_file } ; print $1 ":" $2 ":" $3 ":" $4 ":" $5 }' ${CONNECTION_FILE} > ${TEMP_FILE}
+        mv ${TEMP_FILE} ${CONNECTION_FILE}
 
     else
         echo "incorrect arguments are passed..!"
