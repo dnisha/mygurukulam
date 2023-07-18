@@ -17,7 +17,23 @@ flag_m=false
 flag_r=false
 flag_d=false
 
-while getopts "an:h:u:p:ld:mn:r:i:" opt; do
+if [ $1 == "-d" ]|| [ $1 == "-l" ]; then
+  while getopts "ld" opt; do
+  case $opt in
+    l)
+      flag_l=true
+      ;;
+    d)
+      flag_d=true
+      ;;
+  esac
+  done
+
+fi
+
+
+if [ $1 != "-d" ]|| [ $1 != "-l" ]; then
+while getopts "an:h:u:p:mn:r:i:" opt; do
   case $opt in
     a)
       flag_a=true
@@ -34,12 +50,6 @@ while getopts "an:h:u:p:ld:mn:r:i:" opt; do
     p)
       p=$OPTARG
       ;;
-    l)
-      flag_l=true
-      ;;
-    d)
-      flag_d=true
-      ;;
     m)
       flag_m=true
       ;;
@@ -50,11 +60,12 @@ while getopts "an:h:u:p:ld:mn:r:i:" opt; do
     i)
       i=$OPTARG
       ;;
-    \?)
-      echo "Invalid option: -$OPTARG"
-      ;;
+    #\?)
+      #echo "Invalid option: -$OPTARG"
+      #;;
   esac
 done 2>/dev/null
+fi
 
 USER_NAME_SERVER_IP=${u}@${h}
 HOST=${h}
@@ -78,20 +89,26 @@ if  [ ${flag_a} = true ] && [ ${flag_l} = false ] && [ ${flag_m} = false ] && [ 
 
     elif [ $flag_a ] && [ ! -z {$n} ] && [ ! -z ${h} ] && [ ! -z ${u} ] && [ ! -z ${p} ] && [ ! -z ${i} ]; then
         ssh -p ${PORT} -i ${PEM_FILE} ${USER_NAME_SERVER_IP} 2>/dev/null
-        echo -e "${GREEN}Connecting${NC} to ${SERVER_NAME} on ${PORT} port as ${USER_NAME} via ${PEM_FILE} key" | tee -a ${LOG_FILE}
+        echo -e "${GREEN}[INFO]:${NC} Connecting to ${SERVER_NAME} on ${PORT} port as ${USER_NAME} via ${PEM_FILE} key" | tee -a ${LOG_FILE}
         store_connection_details ${SERVER_NAME} ${USER_NAME} ${HOST} ${PORT} ${PEM_FILE}
     fi
 fi
 
 if [ ${flag_a} = false ] && [ ${flag_l} = true ] && [ ${flag_m} = false ] && [ ${flag_r} = false ]; then
 
-    if [ ${NUMBER_OF_ARG} -eq 1 ]; then
+    if [ ${flag_l} = true ] && [ ${flag_d} = false ]; then
+    
         awk -F: '{print $1}' ${CONNECTION_FILE}
-    elif [ flag_d ]; then
+
+    elif [ ${flag_l} = true ] && [ ${flag_d} = true ]; then
+    
         awk -F: '{if(length($2) == 0 && length($3) == 0) print $1": ssh "$4"@"$5" "; else if(length($2) == 0) print $1": ssh -p " $3 " "$4"@"$5" "; else print $1": ssh -i " $2 " -p " $3 " "$4"@"$5""}' ${CONNECTION_FILE}
 
     fi
+else
+    echo "Invalid option: ${2}"
 fi
+
 
 if [ ${flag_a} = false ] && [ ${flag_l} = false ] && [ ${flag_m} = true ] && [ ${flag_r} = false ]; then
 
@@ -125,5 +142,3 @@ if [ ${flag_a} = false ] && [ ${flag_l} = false ] && [ ${flag_m} = false ] && [ 
     fi
 fi
 
-
-#awk -F: '{print "ssh -i " $2 " -p " $3 " "$4"@"$5}' ${CONNECTION_FILE}
