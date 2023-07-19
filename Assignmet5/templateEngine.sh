@@ -31,11 +31,3 @@ for arg in "$@"; do
 done
 
 sed -e "s/fname/${FNAME}/g" -e "s/topic/${TOPIC}/g" ${INPUT_FILE}
-
-
-
-<<COMMENT1
-
-echo "fname=sandeep" | awk -F= '{ print $2}'
-sed -e 's/$1/deepak/g' -e 's/$2/linux/g' trainer.template 
-COMMENT1
