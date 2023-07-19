@@ -6,7 +6,7 @@ flag_d=false
 flag_m=false
 flag_r=false
 
-while getopts "ld" opt; do
+while getopts "an:h:l:u:p:mn:r:i:" opt; do
   case $opt in
     a)
       echo "Option 'a' is set."
@@ -31,6 +31,7 @@ while getopts "ld" opt; do
       ;;
     l)
       echo "Option 'l' is set."
+      l=$OPTARG
       flag_l=true
       ;;
     d)
@@ -59,8 +60,8 @@ done
 
 
 echo "OPTION A=$a N=$n H=$h U=$u P=$p R=$r L=$l I=$i D=$d"
-echo "Boolens of l ${flag_l} and d ${flag_d}"
-<<comment
+
+
 if $flag_a; then
   echo "Flag 'a' is used."
     if [ $flag_a ] && [ ! -z ${n} ] && [ ! -z ${p} ]; then
@@ -80,4 +81,3 @@ if $flag_r; then
   echo "Flag 'r' is used with value: $username"
 fi
 
-comment
