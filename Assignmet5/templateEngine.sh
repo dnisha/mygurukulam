@@ -31,3 +31,6 @@ for arg in "$@"; do
 done
 
 sed -e "s/fname/${FNAME}/g" -e "s/topic/${TOPIC}/g" ${INPUT_FILE}
+
+#refrance - https://stackoverflow.com/questions/13570327/how-to-delete-a-substring-using-shell-script
+#https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
