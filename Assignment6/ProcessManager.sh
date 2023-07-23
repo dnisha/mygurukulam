@@ -8,7 +8,8 @@ PRIORITY=""
 TEMPLATE_FILE=unit.template
 FILE=myfile
 
-getoperation () {
+SED="/usr/bin/sed"
+
 while getopts "o:s:a:p:" opt; do
   case $opt in
     o)
@@ -33,7 +34,7 @@ while getopts "o:s:a:p:" opt; do
   esac
 done
 
-}
+
 
 main () {
     
@@ -41,7 +42,7 @@ main () {
     "register")  
         echo "register ${PATH} ${TEMPLATE_FILE}"
 
-        sed -i 's/alias/deepak/g; s/path/bin/g' "${TEMPLATE_FILE}"
+        $SED -e "s/alias/${ALIAS}/g; s/path/${PATH}/g" "${TEMPLATE_FILE}"
       
         ;;  
 
@@ -69,5 +70,5 @@ main () {
 
 
 main ${OPERATION} ${PATH} ${ALIAS} ${PRIORITY}
-getoperation
+
 echo "OPTION O=$OPERATION S=$PATH A=$ALIAS P=$PRIORITY"
