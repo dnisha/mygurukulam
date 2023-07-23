@@ -1,0 +1,16 @@
+[Unit]
+Description=My alias Service 
+After=network.target     
+
+[Service]            
+ExecStart=path           
+Restart=on-failure        
+RestartSec=5      
+
+[Install]
+WantedBy=multi-user.target
+
+
+#sudo ln -s /bin/demo /usr/local/bin/demo2
+#sudo ln -s /lib/systemd/system/nginx.service /etc/systemd/system/nginx-alias.service
+#https://www.shellhacks.com/systemd-service-file-example/
