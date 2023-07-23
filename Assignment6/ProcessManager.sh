@@ -8,6 +8,7 @@ PRIORITY=""
 TEMPLATE_FILE=unit.template
 FILE=myfile
 
+getoperation () {
 while getopts "o:s:a:p:" opt; do
   case $opt in
     o)
@@ -31,6 +32,8 @@ while getopts "o:s:a:p:" opt; do
       ;;
   esac
 done
+
+}
 
 main () {
     
@@ -66,5 +69,5 @@ main () {
 
 
 main ${OPERATION} ${PATH} ${ALIAS} ${PRIORITY}
+getoperation
 echo "OPTION O=$OPERATION S=$PATH A=$ALIAS P=$PRIORITY"
-#sed -e "s/alias/test/g" -e "s/path/'bin\/demo\'/g" template
