@@ -1,5 +1,5 @@
 #!/bin/bash
-
+source ./ProcessManagerHelper.sh
 
 OPERATION=""
 PATH=""
@@ -7,6 +7,7 @@ ALIAS=""
 PRIORITY=""
 TEMPLATE_FILE=unit.template
 FILE=myfile
+DB_FILE=serviceDBFile
 
 AWK="/usr/bin/awk"
 TOUCH="/usr/bin/touch"
@@ -14,6 +15,8 @@ MV="/usr/bin/mv"
 SUDO="/usr/bin/sudo"
 SYSTEMCTL="/usr/bin/systemctl"
 KILL="/usr/bin/kill"
+CAT="/usr/bin/cat"
+RENICE="/usr/bin/renice"
 
 while getopts "o:s:a:p:" opt; do
   case $opt in
@@ -43,10 +46,7 @@ main () {
     case ${OPERATION} in  
     "register")  
 
-      $TOUCH ${SERVICE_FILE}
-      $AWK -v script_path="$PATH" -v script_alias="$ALIAS" '{gsub(/alias/, script_alias); gsub(/path/, script_path); print}' ${TEMPLATE_FILE} > ${SERVICE_FILE}
-      $SUDO $MV ${SERVICE_FILE} "/usr/lib/systemd/system"
-      $SUDO $SYSTEMCTL daemon-reload 
+      register
         ;;  
 
     "start")  
@@ -56,28 +56,67 @@ main () {
     
     "status")  
 
-      $SYSTEMCTL status ${SERVICE_FILE}
+      echo "Status : "$($SYSTEMCTL status demo.service | $AWK '/Active/ {print $2$3}')
         ;;
 
     "kill")  
 
-      PID=$($SYSTEMCTL show --property MainPID --value ${SERVICE_FILE})
+      PID=$( get_pid )
       $SUDO $KILL -9 ${PID}
         ;;   
 
     "priority")  
 
-      PID=$($SYSTEMCTL show --property MainPID --value ${SERVICE_FILE})
+      set_priority
       $AWK '{print "Priority : "$18}' /proc/${PID}/stat
         ;;
 
     "list")  
-        echo "list"
+
+        $CAT ${DB_FILE}
         ;;  
+
+    "top")  
+
+      top
+        ;;
     esac
 }
 
+set_priority () {
+
+  NICE=0
+
+  if [ ${PRIORITY} == "low" ]; then
+   
+   NICE=18
+
+  elif [ ${PRIORITY} == "med" ]; then
+
+   NICE=1
+
+  else
+
+  NICE=-18
+
+  fi
+
+  PID=$( get_pid )
+  $SUDO $RENICE -n ${NICE} -p ${PID}
+
+}
+
+top () {
+
+  PID=$( get_pid )
+  STATE=$($SYSTEMCTL status demo.service | $AWK '/Active/ {print $2$3}')
+  PRIORITY=$($AWK '{print "Priority : "$18}' /proc/${PID}/stat)
+  SCRIPT=$($CAT /proc/${PID}/comm)
+  echo -e "alias : ${ALIAS} \nPID : ${PID} \nState : ${STATE} \nPriority : ${PRIORITY} \nScript : ${SCRIPT} "
+}
+
+get_pid () {
+  echo $($SYSTEMCTL show --property MainPID --value ${SERVICE_FILE})
+}
 
 main ${OPERATION} ${PATH} ${ALIAS} ${PRIORITY}
-
-echo "OPTION O=$OPERATION S=$PATH A=$ALIAS P=$PRIORITY"

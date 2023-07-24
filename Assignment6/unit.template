@@ -16,3 +16,4 @@ WantedBy=multi-user.target
 #https://www.shellhacks.com/systemd-service-file-example/
 #systemctl show --property MainPID demo
 #systemctl show --property MainPID --value demo
+#systemctl status demo.service | awk '/Active/ {print $2 , $3}
