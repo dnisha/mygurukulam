@@ -8,24 +8,25 @@ PRIORITY=""
 TEMPLATE_FILE=unit.template
 FILE=myfile
 
-SED="/usr/bin/sed"
+AWK="/usr/bin/awk"
+TOUCH="/usr/bin/touch"
+MV="/usr/bin/mv"
+SUDO="/usr/bin/sudo"
+SYSTEMCTL="/usr/bin/systemctl"
+KILL="/usr/bin/kill"
 
 while getopts "o:s:a:p:" opt; do
   case $opt in
     o)
-      echo "Option 'o' is set."
       OPERATION=$OPTARG
       ;;
     s)
-      echo "Option 's' is set."
       PATH=$OPTARG
       ;;
     a)
-      echo "Option 'a' is set."
       ALIAS=$OPTARG
       ;;
     p)
-      echo "Option 'p' is set."
       PRIORITY=$OPTARG
       ;;
     \?)
@@ -37,29 +38,37 @@ done
 
 
 main () {
+  SERVICE_FILE=$ALIAS".service"
     
     case ${OPERATION} in  
     "register")  
-        echo "register ${PATH} ${TEMPLATE_FILE}"
 
-        $SED -e "s/alias/${ALIAS}/g; s/path/${PATH}/g" "${TEMPLATE_FILE}"
-      
+      $TOUCH ${SERVICE_FILE}
+      $AWK -v script_path="$PATH" -v script_alias="$ALIAS" '{gsub(/alias/, script_alias); gsub(/path/, script_path); print}' ${TEMPLATE_FILE} > ${SERVICE_FILE}
+      $SUDO $MV ${SERVICE_FILE} "/usr/lib/systemd/system"
+      $SUDO $SYSTEMCTL daemon-reload 
         ;;  
 
     "start")  
-        echo "start"
+
+      $SUDO $SYSTEMCTL start ${SERVICE_FILE}
         ;;
     
     "status")  
-        echo "start"
+
+      $SYSTEMCTL status ${SERVICE_FILE}
         ;;
 
     "kill")  
-        echo "start"
+
+      PID=$($SYSTEMCTL show --property MainPID --value ${SERVICE_FILE})
+      $SUDO $KILL -9 ${PID}
         ;;   
 
     "priority")  
-        echo "start"
+
+      PID=$($SYSTEMCTL show --property MainPID --value ${SERVICE_FILE})
+      $AWK '{print "Priority : "$18}' /proc/${PID}/stat
         ;;
 
     "list")  
