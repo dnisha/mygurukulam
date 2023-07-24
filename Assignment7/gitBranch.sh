@@ -4,10 +4,7 @@ OPERATION=""
 BRANCH=""
 NEW_BRANCH=""
 
-merge_brach=false
-rebase_brach=false
-
-while getopts "r:l:b:d:m1:1:2:t:" opt; do
+while getopts "r:l:b:d:m1:1:2:" opt; do
   case $opt in
     b)
         echo "got b with value $OPTARG"
@@ -21,12 +18,10 @@ while getopts "r:l:b:d:m1:1:2:t:" opt; do
       ;;
     m)
         echo "got m with value $OPTARG"
-        merge_brach=true
         OPERATION=Merge
       ;;
     r)
         echo "got r with value $OPTARG"
-        rebase_brach=true
         OPERATION=Rebase
       ;;
     2)
@@ -36,6 +31,7 @@ while getopts "r:l:b:d:m1:1:2:t:" opt; do
     1)
         echo "got 1 with value $OPTARG"
         BRANCH=$OPTARG
+    
       ;;
   esac
 done 2>/dev/null
