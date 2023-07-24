@@ -7,6 +7,7 @@ main () {
 
     if [ ${OPERATION} == "-t" ]; then
 
+    TAG_NAME=${2}
     create_tag 
 
     elif [ ${OPERATION} == "-l" ]; then
@@ -14,7 +15,8 @@ main () {
     list_tag ${TAG_NAME}
 
     elif [ ${OPERATION} == "-d" ]; then
-    echo "delete"
+    TAG_NAME=${2}
+    delete_tag ${TAG_NAME}
 
     fi
 }
@@ -26,5 +28,7 @@ create_tag () {
 list_tag () {
     git tag --list 
 }
-
-main ${OPERATION}
+delete_tag () {
+    git tag -d ${TAG_NAME}
+}
+main ${OPERATION} $2
