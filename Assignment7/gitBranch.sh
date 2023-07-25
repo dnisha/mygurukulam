@@ -4,7 +4,7 @@ OPERATION=""
 BRANCH=""
 NEW_BRANCH=""
 
-while getopts "r:l:b:d:m1:1:2:" opt; do
+while getopts "rlb:d:m1:2:" opt; do
   case $opt in
     b)
         echo "got b with value $OPTARG"
@@ -15,6 +15,10 @@ while getopts "r:l:b:d:m1:1:2:" opt; do
         echo "got d with value $OPTARG"
         OPERATION=Delete
         BRANCH=$OPTARG
+      ;;
+    l)
+        echo "got m with value $OPTARG"
+        OPERATION=List
       ;;
     m)
         echo "got m with value $OPTARG"
@@ -38,15 +42,14 @@ done 2>/dev/null
 
 main () {
 
-    if [ ${1} == "-l" ]; then
-
-        list_branch
-    fi
-
     case ${OPERATION} in  
     "Create")  
 
         create_branch ${BRANCH}      
+        ;;  
+    "List")  
+
+        list_branch ${BRANCH}      
         ;;  
 
     "Delete")  
