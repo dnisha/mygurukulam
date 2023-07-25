@@ -10,7 +10,7 @@ COMMENT_CSV=/tmp/comment.csv
 CHANGED_FILE_CSV=/tmp/changedfiles.csv
 TMP_CSV=/tmp/tmp.csv
 
-while getopts "u:d" opt; do
+while getopts "u:d:" opt; do
   case $opt in
     u)
       URL=$OPTARG
@@ -63,7 +63,7 @@ main () {
 
   header_row="ID,AUTHOR NAME,DATE,EMAIL,COMMIT,CHANGED FILES"
   echo "$header_row" > ${TMP_CSV}
-  cat ${REPORT_FILE} >> ${TMP_CSV}
+  cat ${REPORT_FILE} | head -n ${DAY} >> ${TMP_CSV}
   mv ${TMP_CSV} ${REPORT_FILE}
 
 
