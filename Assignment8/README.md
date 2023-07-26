@@ -1,0 +1,34 @@
+# Assignment 8
+Create a utility to manage build operations of a maven based java project such as:
+- Mandatory
+   - Genreate the artifact of project
+   - Upload the artifact of project to local repo
+   - Perform static code analysis of project using any of the tool, which will be provided as an argument in commandline
+       - checkstyle
+       - findbugs
+       - pmd
+       - Perform unit test case analysis of the project and let user give an option to either generate report in csv/xml/html for
+            - Unit tests status
+            - code coverage status
+   - deploy the artifact to websever(tomcat)      
+
+Repo link : https://github.com/opstree/spring3hibernate.git
+i.e 
+./buildMaven.sh -a 
+./buildMaven.sh -i 
+./buildMaven.sh -s checkstyle
+./buildMaven.sh -s findbugs
+./buildMaven.sh -s pmd
+./buildMaven.sh -t <unit_test_plugin_name>
+./buildMaven.sh -d 
+
+flag help
+a : to generate a artifact
+i : to install the artifact to local repo 
+s : to do  any static code analysis 
+t : to do any unit testing
+d : to deploy the artifact
+
+mvn clean site -Dspotbugs.skip=true
+mvn clean site -Dcheckstyle.skip=true -Dpmd.skip=true
+/opt/tomcat/webapps/

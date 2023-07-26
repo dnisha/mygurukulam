@@ -1,6 +1,7 @@
 #!/bin/bash
 URL=""
 DAY=""
+FILE_TYPE=""
 REPORT_FILE=report.csv
 COMMIT_CSV=/tmp/commit.csv
 AUTHOR_CSV=/tmp/author.csv
@@ -28,18 +29,23 @@ main () {
 
     rm -rf ${REPORT_FILE}
     git clone ${URL}
+
     git log | awk -F ' ' '/^commit/  { print $2 }' > ${COMMIT_CSV}
     paste -d report.csv ${COMMIT_CSV} > ${TMP_CSV}
     mv ${TMP_CSV} report.csv
+
     git log | awk -F ' ' '/^Author/  { print $2 }' > ${AUTHOR_CSV}
     paste -d, report.csv ${AUTHOR_CSV} > ${TMP_CSV}
     mv ${TMP_CSV} report.csv
+
     git log | awk -F ':  ' '/^Date/  { print $2 }' > ${DATE_CSV}
     paste -d, report.csv ${DATE_CSV} > ${TMP_CSV}
     mv ${TMP_CSV} report.csv
+
     git log | awk -F' ' ' /^Author/ {print $3}' | sed 's/[<,>]//g' > ${EMAIL_CSV}
     paste -d, report.csv ${EMAIL_CSV} > ${TMP_CSV}
     mv ${TMP_CSV} report.csv
+    
     git log | awk '/^    / { print $0 }' > ${COMMENT_CSV}
     paste -d, report.csv ${COMMENT_CSV} > ${TMP_CSV}
     mv ${TMP_CSV} report.csv
@@ -53,19 +59,31 @@ main () {
 
     for message in "${commit_messages[@]}"; do
 
-    changed_file=$(git show --stat $message | awk '/[|] / {print}' | awk -F '|' '{print $1}' | awk -F'|' '{gsub(/^[[:space:]]+|[[:space:]]+$/,"",$1); printf "%s ", $1}')
+    changed_file=$(git show --stat $message | awk '/[|] / {print}' | awk -F '|' '{print $1}' | tr '\n' '|' | tr -s '[:blank:]')
     echo -e "$changed_file" >> ${CHANGED_FILE_CSV}
 
     done
 
     paste -d, report.csv ${CHANGED_FILE_CSV} > ${TMP_CSV}
     mv ${TMP_CSV} report.csv
+    format_file
+    
+}
 
-  header_row="ID,AUTHOR NAME,DATE,EMAIL,COMMIT,CHANGED FILES"
-  echo "$header_row" > ${TMP_CSV}
-  cat ${REPORT_FILE} | head -n ${DAY} >> ${TMP_CSV}
-  mv ${TMP_CSV} ${REPORT_FILE}
+create_report () {
 
+    git log | awk -F ':  ' '/^Date/  { print $2 }' > ${FILE_TYPE}
+    paste -d, report.csv ${FILE_TYPE} > ${TMP_CSV}
+    mv ${TMP_CSV} report.csv
+
+}
+
+format_file () {
+
+    header_row="ID,AUTHOR NAME,DATE,EMAIL,COMMIT,CHANGED FILES"
+    echo "$header_row" > ${TMP_CSV}
+    cat ${REPORT_FILE} | head -n ${DAY} >> ${TMP_CSV}
+    mv ${TMP_CSV} ${REPORT_FILE}
 
 }
 
