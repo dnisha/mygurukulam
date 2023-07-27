@@ -51,12 +51,12 @@ main () {
       ;;
     "unit_test")
 
-        mvn site -D${STATIC_CODE}.output=html
+        mvn clean test jacoco:report-aggregate -DdataFileFormat=html
         
       ;;
     "deploy")
 
-        cp /target/springboot-webFlux-TodoApp-0.0.1-SNAPSHOT.war /opt/tomcat/webapps/
+        cp /target/Spring3HibernateApp.war /var/lib/tomcat7/webapps
 
       ;;
     *)
@@ -70,15 +70,15 @@ static_code_analysis () {
 
     if [ ${STATIC_CODE} == "checkstyle" ]; then
 
-    mvn clean site -Dspotbugs.skip=true -Dpmd.skip=true
+    mvn clean compile checkstyle:checkstyle
 
-    elif [ ${STATIC_CODE} == "spotbugs" ]; then
+    elif [ ${STATIC_CODE} == "findbugs" ]; then
 
-    mvn clean site -Dcheckstyle.skip=true -Dpmd.skip=true
+    mvn clean compile findbugs:findbugs
 
     elif [ ${STATIC_CODE} == "pmd" ]; then
    
-    mvn clean site -Dspotbugs.skip=true -Dcheckstyle.skip=true
+    mvn clean compile pmd:pmd
 
     fi
 

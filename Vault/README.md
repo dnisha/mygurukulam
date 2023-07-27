@@ -13,3 +13,6 @@ vault secrets enable -path=my kv
 
 Disable secret engin path :-
 vault secrets disable aws
+
+Unseal command:-
+vault operator init
