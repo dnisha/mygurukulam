@@ -1,0 +1,47 @@
+#create group
+ansible web -m group -a "name=team1 state=present"
+ansible web -m group -a "name=ninja state=present"
+
+#create user
+ansible web -m user -a "name=Nitish state=present groups=team1"
+
+#provide directory access to the team
+ansible web -m user -a "name=Nitish state=present groups=team1" -m file -a "path=/home/Nitish mode=0754 group=team1"
+
+#creating two shared directory with permission
+ansible web -m file -a "path=/Team group=team1 mode=0774 state=directory"
+ansible web -m file -a "path=/Ninja group=ninja mode=0774 state=directory" 
+
+#making directory sharable
+ansible web -m file -a "src=/Team dest=/home/Nitish/Team state=link owner=Nitish group=team1"
+ansible web -m file -a "src=/Ninja dest=/home/Nitish/Ninja state=link owner=Nitish group=ninja"
+
+#track group
+ansible web -m lineinfile -a "path=/group.txt line=team1 state=present"
+
+#track user
+ansible web -m lineinfile -a "path=/user.txt line=Nitish state=present"
+
+#change shell
+ansible web -m user -a "name=Nitish state=present groups=team1 shell=/bin/zsh"
+
+#change password
+ansible web -m user -a "name=Nitish state=present groups=team1 shell=/bin/zsh update_password=deepak123"
+
+#delete user
+ansible web -m user -a "name=Nitish state=absent remove=yes"
+
+#delete group
+ansible web -m group -a "name=team1 state=absent"
+
+#list group
+ansible web -m shell -a "cat /group.txt"
+
+#list user 
+ansible web -m shell -a "cat /user.txt"
+
+#delete group
+ansible web -m lineinfile -a "path=/group.txt line=group4 state=absent"
+
+#delete user
+ansible web -m lineinfile -a "path=/user.txt line=group4 state=absent"

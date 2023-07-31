@@ -1,0 +1,1 @@
+declare -xr ANSIBLE_CONFIG=/etc/ansible/ansible.cfg
