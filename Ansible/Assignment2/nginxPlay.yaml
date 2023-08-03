@@ -2,6 +2,7 @@
 - name: Serve multiple sites
   hosts: web
   remote_user: root
+  serial: 1
   tasks:
     - name: Update all packages to their latest version
       ansible.builtin.apt:
@@ -20,6 +21,13 @@
     - name: Copy website files
       ansible.builtin.copy:
         src: waseem
+        dest: /var/www
+        owner: root
+        group: root
+        mode: u=rw,g=r,o=r
+    - name: Copy website files
+      ansible.builtin.copy:
+        src: nosite
         dest: /var/www
         owner: root
         group: root
@@ -45,6 +53,10 @@
         owner: root
         group: root
         mode: u=rw,g=r,o=r
+    - name: Copying nginx conf file
+      ansible.builtin.copy:
+        src: nginx.conf
+        dest: /etc/nginx/
     - name: Copying log rotation config for nginx
       ansible.builtin.copy:
         src: nginx
@@ -53,7 +65,7 @@
       ansible.builtin.cron:
         name: "a job for rotating html page"
         minute: '*'
-        hour: '*'
+        hour: '*/8'
         day: '*'
         month: '*'
         weekday: '*'
@@ -75,3 +87,11 @@
       ansible.builtin.copy:
         src: 000-default.conf
         dest: /etc/apache2/sites-available/
+    - name: Copying file to be served from apache server
+      ansible.builtin.copy:
+        src: index.html
+        dest: /var/www/html/
+    - name: Apache reloded
+      ansible.builtin.service:
+        name: apache2
+        state: reloaded
