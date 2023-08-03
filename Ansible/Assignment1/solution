@@ -6,11 +6,14 @@ ansible web -m group -a "name=ninja state=present"
 ansible web -m user -a "name=Nitish state=present groups=team1"
 
 #provide directory access to the team
-ansible web -m user -a "name=Nitish state=present groups=team1" -m file -a "path=/home/Nitish mode=0754 group=team1"
+ansible web -m user -a "name=Nitish state=present groups=team1" 
+
+#Change user directory permission to the belonging group
+ansible web -m file -a "path=/home/Nitish mode=0754 group=team1"
 
 #creating two shared directory with permission
 ansible web -m file -a "path=/Team group=team1 mode=0774 state=directory"
-ansible web -m file -a "path=/Ninja group=ninja mode=0774 state=directory" 
+ansible web -m file -a "path=/Ninja group=ninja mode=0777 state=directory" 
 
 #making directory sharable
 ansible web -m file -a "src=/Team dest=/home/Nitish/Team state=link owner=Nitish group=team1"

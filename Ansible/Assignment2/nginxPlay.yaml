@@ -1,0 +1,77 @@
+---
+- name: Serve multiple sites
+  hosts: web
+  remote_user: root
+  tasks:
+    - name: Update all packages to their latest version
+      ansible.builtin.apt:
+        update_cache: yes
+    - name: Install nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+    - name: Copy website files
+      ansible.builtin.copy:
+        src: deepak
+        dest: /var/www
+        owner: root
+        group: root
+        mode: u=rw,g=r,o=r
+    - name: Copy website files
+      ansible.builtin.copy:
+        src: waseem
+        dest: /var/www
+        owner: root
+        group: root
+        mode: u=rw,g=r,o=r
+    - name: Copy website files
+      ansible.builtin.copy:
+        src: aditya
+        dest: /var/www
+        owner: root
+        group: root
+        mode: u=rw,g=r,o=r
+    - name: Copy cron job script
+      ansible.builtin.copy:
+        src: rotate_website.sh
+        dest: /sbin
+        owner: root
+        group: root
+        mode: u=rwx,g=r,o=r
+    - name: Copy nginx config file
+      ansible.builtin.copy:
+        src: default
+        dest: /etc/nginx/sites-enabled/
+        owner: root
+        group: root
+        mode: u=rw,g=r,o=r
+    - name: Copying log rotation config for nginx
+      ansible.builtin.copy:
+        src: nginx
+        dest: /etc/logrotate.d/
+    - name: Run rotation_website.sh with cron job
+      ansible.builtin.cron:
+        name: "a job for rotating html page"
+        minute: '*'
+        hour: '*'
+        day: '*'
+        month: '*'
+        weekday: '*'
+        user: root
+        job: "/sbin/rotate_website.sh"
+    - name: Nginx reloded
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded
+    - name: Install latest version of Apache
+      ansible.builtin.apt: 
+        name: apache2
+        state: present
+    - name: Copying port configuration file
+      ansible.builtin.copy:
+        src: ports.conf
+        dest: /etc/apache2/
+    - name: Copying default site for apache
+      ansible.builtin.copy:
+        src: 000-default.conf
+        dest: /etc/apache2/sites-available/
