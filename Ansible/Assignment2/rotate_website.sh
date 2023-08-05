@@ -28,4 +28,6 @@ new_website=${websites[$serving_site_index]}
 echo "serving site: $new_website"
 
 sed -i "s/${current_site}/${new_website}/" /etc/nginx/sites-enabled/default
+sed -i "s/${current_site}/${new_website}/" /etc/apache2/sites-available/000-default.conf
 nginx -s reload
+systemctl reload apache2

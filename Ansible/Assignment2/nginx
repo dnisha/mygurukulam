@@ -7,7 +7,7 @@
         notifempty
         create 0640 www-data adm
         sharedscripts
-        size 1G
+        maxsize 1G
         prerotate
                 if [ -d /etc/logrotate.d/httpd-prerotate ]; then \
                         run-parts /etc/logrotate.d/httpd-prerotate; \

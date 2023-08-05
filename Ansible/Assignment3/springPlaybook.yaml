@@ -1,0 +1,68 @@
+---
+- name: Deploy spring application
+  hosts: web
+  remote_user: ubuntu
+  gather_facts: True
+  serial: 1
+  tasks:
+    - name: Update all packages to their latest version
+      ansible.builtin.apt:
+         update_cache: yes
+    - name: Install Mysql on Debian
+      ansible.builtin.apt:
+         name: mysql-server
+         state: present
+      when: ansible_os_family == "Debian"
+    - name: Install Mysql on RedHat
+      ansible.builtin.yum:
+         name: mysql-server
+         state: present
+      when: ansible_os_family == "RedHat"
+    - name: Install java 11 on Debian
+      ansible.builtin.apt:
+         name: openjdk-11-jdk
+         state: present
+      when: ansible_os_family == "Debian"
+    - name: Install java 11 on RedHat
+      ansible.builtin.yum:
+         name: openjdk-11-jdk
+         state: present
+      when: ansible_os_family == "RedHat"
+    - name: Install tomcat on Debian
+      ansible.builtin.apt:
+         name: tomcat9
+         state: present
+      when: ansible_os_family == "Debian"
+    - name: Install tomcat on RedHat
+      ansible.builtin.yum:
+         name: tomcat9
+         state: present
+      when: ansible_os_family == "RedHat"
+    - name: Create tomcat group
+      ansible.builtin.group:
+        name: tomcat
+        state: present
+    - name: create tomcat user
+      ansible.builtin.user:
+        name: tomcat
+        groups: tomcat
+    - name: Copy jar file to tomcat dir
+      ansible.builtin.copy:
+        src: /home/ubuntu/spring3hibernate/target/Spring3HibernateApp.war
+        dest: /var/lib/tomcat9/webapps/
+        owner: tomcat
+        group: tomcat
+        mode: u=rwx,g=r,o=r
+      notify:
+        - Restart tomcat
+    - name: Testing handler
+      ansible.builtin.copy:
+        src: /home/ubuntu/deepak
+        dest: /var/lib/tomcat9/webapps/
+      notify:
+        - Restart tomcat
+  handlers:
+    - name: Restart tomcat
+      ansible.builtin.service:
+        name: tomcat9
+        state: restarted

@@ -65,7 +65,7 @@
       ansible.builtin.cron:
         name: "a job for rotating html page"
         minute: '*'
-        hour: '*/8'
+        hour: '*'
         day: '*'
         month: '*'
         weekday: '*'
