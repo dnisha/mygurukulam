@@ -1,0 +1,32 @@
+    - name: Display all variables/facts known for a host
+      debug:
+          msg: System {{ inventory_hostname }}
+    - name: Update all packages to their latest version
+      apt:
+          update_cache: yes
+    - name: Install Nginx on Debian
+      apt:
+          name: nginx
+          state: present
+      when: ansible_os_family == "Debian"
+    - name: Install Nginx on RedHat
+      yum:
+          name: nginx
+          state: present
+      when: ansible_os_family == "RedHat"
+    - name: Copying templated file 
+      template:
+          src: index.nginx-debian.html.j2
+          dest: /var/www/html/index.nginx-debian.html
+    - name: Changing worker connection count
+      template:
+          src: nginx.conf.j2
+          dest: /etc/nginx/nginx.conf
+      notify:
+        - Restart nginx
+    - name: Changing description of a service file
+      template:
+          src: nginx.service.j2
+          dest: /lib/systemd/system/nginx.service
+      notify:
+        - Restart nginx

@@ -1,0 +1,10 @@
+---
+- name: Deploy nginx server
+  hosts: web
+  remote_user: parallels
+  become_user: parallels
+  gather_facts: True
+  serial: 1
+  become: true
+  roles:
+    - /home/parallels/Documents/Ansible/Day3Task/nginx
