@@ -1,0 +1,24 @@
+---
+- name: User creating
+  hosts: web
+  remote_user: ubuntu
+  gather_facts: True
+  serial: 1
+  become: true
+  vars_files:
+    - users.yml
+  tasks:
+    - name: Update all packages to their latest version
+      apt:
+         update_cache: yes
+    - name: Create avatars group
+      group:
+        name: avatars
+        state: present
+    - name: create "{{ item }}" user
+      user:
+        name: "{{ item.name }}"
+        groups: avatars
+        state: present
+        password: "{{ item.password | password_hash('sha512') }}"
+      loop: "{{ users }}"

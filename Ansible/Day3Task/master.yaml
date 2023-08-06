@@ -1,0 +1,24 @@
+---
+- name: Executing tasks from master playbook
+  hosts: web
+  remote_user: ubuntu
+  gather_facts: True
+  serial: 1
+  become: true
+  tasks:
+    - name: Check if ~/xyz file exists
+      stat:
+        path: ~/xyz
+      register: file_check_result
+    - name: Print the gateway for each host when defined
+      debug:
+        msg: file status {{ file_check_result }}
+    - name: Create ~/xyz file if it doesn't exist
+      file:
+        path: ~/xyz
+        state: touch
+      when: not file_check_result.stat.exists
+- import_playbook: user.yaml
+- import_playbook: nginxPlay.yaml
+
+
