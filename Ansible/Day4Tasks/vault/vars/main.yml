@@ -1,0 +1,3 @@
+vault_version: 1.14.0
+vault_user: vault
+vault_group: vaultg

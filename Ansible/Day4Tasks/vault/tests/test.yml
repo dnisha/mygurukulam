@@ -1,0 +1,8 @@
+---
+- hosts: web
+  remote_user: parallels
+  become: yes
+  become_user: root
+  gather_facts: True
+  roles:
+    - /home/parallels/Documents/Ansible/Day4Task/vault

@@ -1,0 +1,35 @@
+    - name: Creating vault user group
+      ansible.builtin.group:
+        name: "{{ vault_group }}"
+        state: present
+      become: true
+    - name: Creating vault user
+      user:
+        name: "{{ vault_user }}"
+        group: "{{ vault_group }}"
+        system: yes
+        shell: "/sbin/nologin"
+        comment: "vault nologin User"
+        createhome: "no"
+        state: present
+    - name: Install unzip packages
+      apt:
+        name: unzip
+        state: present
+    - name: Download binary
+      get_url:
+        url: https://releases.hashicorp.com/vault/{{vault_version}}/vault_{{vault_version}}_linux_amd64.zip
+        dest: /tmp/vault_{{vault_version}}_linux_amd64.zip
+        owner: "{{ vault_user }}"
+        group: "{{ vault_group }}"
+        mode: 0755
+      register: vault_download
+      when: ansible_os_family == "Debian"
+    - name: "Unzip vault archive"
+      unarchive:
+        src: "{{ vault_download.dest }}"
+        dest: /usr/local/bin
+        owner: "{{ vault_user }}"
+        group: "{{ vault_group }}"
+        copy: no
+        mode: 0755
