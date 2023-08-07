@@ -5,5 +5,23 @@ user_state: add
 group_name: devops
 group_state: add
 repo: https://github.com/barchart/marketdata-api-js.git
-dest: /tmp/deepak
+dest: /tmp/app
 branch_name: master
+
+install_software_items:
+  - nginx
+  - git
+
+uninstall_software_items:
+  - mysql-server
+  - openjdk-11-jdk
+
+add_users:
+  - name: deepak
+    group: QA
+  - name: ronit
+    group: Devops
+
+delete_users:
+  - deepak
+  - ronit

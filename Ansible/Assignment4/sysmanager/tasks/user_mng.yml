@@ -1,31 +1,33 @@
-- name: "Check if '{{ group_name }}' group exists"
-  command: getent group devops
-    register: group_check
-    ignore_errors: true
-  when: (user_state == 'add')
+- name: Check if group exists
+  command: getent group {{ item.group }}
+  loop: "{{ add_users }}"
+  register: group_check_results
+  ignore_errors: true
 
-- name: "Creating '{{ user_name }}' user"
+- name: Extract failed groups
+  set_fact:
+    failed_groups: "{{ group_check_results.results | selectattr('failed', '==', true) | map(attribute='item.group') | list }}"
+
+- name: Print failed groups
+  debug:
+    var: failed_groups
+
+- name: "Creating groups that dosnt exist"
+  group:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ failed_groups }}"                        
+
+- name: "Adding users"
   user:
-    name: "{{ user_name }}"
-    groups: "{{ group_name }}"
+    name: "{{ item.name }}"
+    groups: "{{ item.group }}"
     append: yes
     state: present
-  when: (user_state == 'add')
+  loop: "{{ add_users }}"
 
-- name: "Deleting '{{ user_name }}' user"
+- name: "Deleting users"
   user:
-    name: "{{ user_name }}"
+    name: "{{ item }}"
     state: absent
-  when: (user_state == 'delete')
-
-- name: "Creating group '{{ group_name }}'"
-  group:
-    name: "{{ group_name }}"
-    state: present
-  when: (group_state == 'add')
-
-- name: "Deleting group '{{ group_name }}'"
-  group:
-    name: "{{ group_name }}"
-    state: absent
-  when: (group_state == 'delete')
+  loop: "{{ delete_users }}"
