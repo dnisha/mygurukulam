@@ -1,0 +1,9 @@
+---
+- name: Manage System
+  include_tasks: debug.yml
+  
+- include_tasks: software_mng.yml
+
+- include_tasks: user_mng.yml
+
+- include_tasks: git_mng.yml

@@ -1,0 +1,11 @@
+- name: "Clone url : '{{ repo }}' , brach : '{{ branch_name }}'"
+  ansible.builtin.git:
+    repo: "{{ repo }}"
+    dest: "{{ dest }}"
+    version: master
+    update: yes
+
+# - name: "Git checkout url : '{{ repo }}'"
+#   git:
+#     repo: "{{ repo }}"
+#     dest: "{{ dest }}"

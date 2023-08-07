@@ -1,0 +1,31 @@
+- name: "Check if '{{ group_name }}' group exists"
+  command: getent group devops
+    register: group_check
+    ignore_errors: true
+  when: (user_state == 'add')
+
+- name: "Creating '{{ user_name }}' user"
+  user:
+    name: "{{ user_name }}"
+    groups: "{{ group_name }}"
+    append: yes
+    state: present
+  when: (user_state == 'add')
+
+- name: "Deleting '{{ user_name }}' user"
+  user:
+    name: "{{ user_name }}"
+    state: absent
+  when: (user_state == 'delete')
+
+- name: "Creating group '{{ group_name }}'"
+  group:
+    name: "{{ group_name }}"
+    state: present
+  when: (group_state == 'add')
+
+- name: "Deleting group '{{ group_name }}'"
+  group:
+    name: "{{ group_name }}"
+    state: absent
+  when: (group_state == 'delete')

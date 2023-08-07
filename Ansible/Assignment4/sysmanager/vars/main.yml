@@ -1,0 +1,9 @@
+software_name: nginx 
+software_state: install
+user_name: deepak
+user_state: add
+group_name: devops
+group_state: add
+repo: https://github.com/barchart/marketdata-api-js.git
+dest: /tmp/deepak
+branch_name: master

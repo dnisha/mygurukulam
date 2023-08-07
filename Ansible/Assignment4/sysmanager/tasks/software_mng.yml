@@ -1,0 +1,32 @@
+- name: "{{ software_state }} {{ software_name }}"
+  debug:
+    msg: "System '{{ inventory_hostname }}'"
+
+- name: "Update all packages of '{{ ansible_os_family }}' to their latest version"
+  apt:
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: "Install '{{ software_name }}' on Debian"
+  apt:
+    name: "{{ software_name }}"
+    state: present
+  when: (ansible_os_family == "Debian") and (software_state == 'install')
+
+- name: "Uninstall '{{ software_name }}' on Debian"
+  apt:
+    name: "{{ software_name }}"
+    state: absent
+  when: (ansible_os_family == "Debian") and (software_state == 'uninstall')
+
+- name: "Install '{{ software_name }}' on RedHat"
+  yum:
+    name: "{{ software_name }}"
+    state: present
+  when: (ansible_os_family == "RedHat") and (software_state == 'install')
+
+- name: "Uninstall '{{ software_name }}' on RedHat"
+  yum:
+    name: "{{ software_name }}"
+    state: absent
+  when: (ansible_os_family == "RedHat") and (software_state == 'uninstall')
