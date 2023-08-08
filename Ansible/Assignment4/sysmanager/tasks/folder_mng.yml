@@ -1,0 +1,5 @@
+- name: Create folder structures
+  file:
+    path: "{{ item.name }}"
+    state: "{{ item.state }}"
+  loop: "{{ folder_structures }}"

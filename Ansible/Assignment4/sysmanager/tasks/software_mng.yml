@@ -1,3 +1,4 @@
+
 - name: "Update all packages of '{{ ansible_os_family }}' to their latest version"
   apt:
     update_cache: yes
@@ -9,6 +10,7 @@
     state: present
   loop: "{{ install_software_items }}"
   when: (ansible_os_family == "Debian")
+  ignore_errors: true
 
 - name: "Install packages on RedHat"
   yum:

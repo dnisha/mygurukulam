@@ -1,6 +1,6 @@
 ---
 - name: Manage System
-  include_tasks: debug.yml
+  include_tasks: folder_mng.yml
   
 - include_tasks: software_mng.yml
 

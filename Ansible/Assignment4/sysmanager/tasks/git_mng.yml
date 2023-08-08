@@ -1,11 +1,20 @@
 - name: "Clone url : '{{ repo }}' , brach : '{{ branch_name }}'"
-  ansible.builtin.git:
+  git:
     repo: "{{ repo }}"
     dest: "{{ dest }}"
     version: master
     update: yes
 
-# - name: "Git checkout url : '{{ repo }}'"
-#   git:
-#     repo: "{{ repo }}"
-#     dest: "{{ dest }}"
+- name: "Create git archive from '{{ repo }}'"
+  git:
+    repo: "{{ repo }}"
+    dest: "{{ dest }}"
+    archive: /tmp/ansible-examples.zip
+
+- name: "Just get information about the '{{ repo }}' whether or not it has already been cloned locally"
+  git:
+    repo: "{{ repo }}"
+    dest: "{{ dest }}"
+    clone: no
+    update: no
+

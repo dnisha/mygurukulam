@@ -25,3 +25,11 @@ add_users:
 delete_users:
   - deepak
   - ronit
+
+folder_structures:
+  - name: /var/www/html
+    state: directory
+  - name: /etc/my_app
+    state: directory
+  - name: /opt/new_app
+    state: directory
