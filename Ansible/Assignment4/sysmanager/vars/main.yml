@@ -1,13 +1,3 @@
-software_name: nginx 
-software_state: install
-user_name: deepak
-user_state: add
-group_name: devops
-group_state: add
-repo: https://github.com/barchart/marketdata-api-js.git
-dest: /tmp/app
-branch_name: master
-
 install_software_items:
   - nginx
   - git
@@ -33,3 +23,10 @@ folder_structures:
     state: directory
   - name: /opt/new_app
     state: directory
+
+git_items:
+  - repo: https://github.com/barchart/marketdata-api-js.git
+    dest: /tmp/app
+    branch_name: master
+ 
+ 

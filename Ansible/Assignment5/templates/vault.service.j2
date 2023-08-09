@@ -1,0 +1,19 @@
+[Unit]
+Description=It's a service for managing secrets using Vault
+Documentation=https://medium.com/@mitesh_shamra/setup-hashicorp-vault-using-ansible-fa8073a70a56
+After=network.target 
+ConditionPathExists={{ vault_cfg }}
+
+[Service]
+ExecStart=vault server -config={{ vault_cfg }}
+ConditionPathExists=/etc/vault/vault.hcl
+ExecReload=/bin/kill -HUP $MAINPID
+CapabilityBoundingSet=CAP_SYSLOG CAP_IPC_LOCK
+Capabilities=CAP_IPC_LOCK+ep
+SecureBits=keep-caps
+NoNewPrivileges=yes
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target
+Alias=vault.service

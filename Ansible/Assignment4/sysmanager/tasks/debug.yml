@@ -1,3 +1,0 @@
-- name: Task using playbook-level variable
-  debug:
-    var: software_name

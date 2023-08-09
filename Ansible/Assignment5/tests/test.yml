@@ -1,0 +1,9 @@
+---
+- hosts: web
+  become_user: root
+  gather_facts: True
+  serial: 1
+  become: true
+  remote_user: parallels
+  roles:
+    - /home/ubuntu/vault

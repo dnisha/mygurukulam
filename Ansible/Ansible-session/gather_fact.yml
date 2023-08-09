@@ -1,0 +1,16 @@
+---
+- name: Deploy spring application
+  hosts: all
+  remote_user: parallels
+  gather_facts: True
+  serial: 1 
+  tasks:
+    - name: Print custom fact
+      debug:
+        var: ansible_facts['ansible_local']['httpd']['basic']['state']
+    - name: Gather fact for hostname
+      debug:
+        var: ansible_hostname
+    - name: Gather fact for architecture
+      debug:
+        var: ansible_architecture

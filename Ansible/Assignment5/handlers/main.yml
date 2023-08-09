@@ -1,0 +1,4 @@
+- name: Daemon reload
+  systemd:
+    daemon_reload: true
+  listen: "reload daemon"

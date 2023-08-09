@@ -1,20 +1,23 @@
-- name: "Clone url : '{{ repo }}' , brach : '{{ branch_name }}'"
+- name: "Clone git repo"
   git:
-    repo: "{{ repo }}"
-    dest: "{{ dest }}"
+    repo: "{{ item.repo }}"
+    dest: "{{ item.dest }}"
     version: master
     update: yes
+  loop: "{{ git_items }}" 
 
-- name: "Create git archive from '{{ repo }}'"
+- name: "Create git archive from repository"
   git:
-    repo: "{{ repo }}"
-    dest: "{{ dest }}"
+    repo: "{{ item.repo }}"
+    dest: "{{ item.dest }}"
     archive: /tmp/ansible-examples.zip
+  loop: "{{ git_items }}" 
 
-- name: "Just get information about the '{{ repo }}' whether or not it has already been cloned locally"
+- name: "Just get information about the repository whether or not it has already been cloned locally"
   git:
-    repo: "{{ repo }}"
-    dest: "{{ dest }}"
+    repo: "{{ item.repo }}"
+    dest: "{{ item.dest }}"
     clone: no
     update: no
+  loop: "{{ git_items }}" 
 
