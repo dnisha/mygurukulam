@@ -4,3 +4,5 @@ vault_group: vaultg
 vault_binary: /bin
 vault_cfg: /etc/vault/vault.hcl
 vault_service: /etc/systemd/system/vault.service 
+unseal_keys_dir_output: .
+root_token_dir_output: .

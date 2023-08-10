@@ -2,3 +2,8 @@
   systemd:
     daemon_reload: true
   listen: "reload daemon"
+
+- name: Start vault
+  ansible.builtin.service:
+    name: vault
+    state: started

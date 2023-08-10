@@ -1,0 +1,78 @@
+- name: Creating vault user group
+  ansible.builtin.group:
+    name: "{{ vault_group }}"
+    state: present
+  become: true
+
+- name: Creating vault user
+  user:
+    name: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    system: yes
+    shell: "/sbin/nologin"
+    comment: "vault nologin User"
+    createhome: "no"
+    state: present
+
+- name: Install unzip on Debian
+  apt:
+    name: unzip
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Install unzip on RedHat
+  yum:
+    name: unzip
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Download binary
+  get_url:
+    url: https://releases.hashicorp.com/vault/{{vault_version}}/vault_{{vault_version}}_linux_amd64.zip
+    dest: /tmp/vault_{{vault_version}}_linux_amd64.zip
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    mode: 0755
+  register: vault_download
+
+- name: Unzip vault archive
+  unarchive:
+    src: "{{ vault_download.dest }}"
+    dest: "{{ vault_binary }}"
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    copy: no
+    mode: 0755
+  register: vault_unzip
+
+- name: Create vault dir file 
+  file:
+    path: /etc/vault
+    state: directory
+    
+- name: Create vault file  
+  file:
+    path: "{{ vault_cfg }}"
+    state: touch
+
+- name: Create directory for storage backend
+  ansible.builtin.file:
+    path: /opt/vault/data
+    state: directory
+    recurse: yes
+
+- name: Copying configuration file
+  copy:
+    src: vault.hcl
+    dest: "{{ vault_cfg }}"
+  notify: 
+    - reload daemon
+    - Start vault
+
+- name: Copying unit service file
+  template:
+    src: vault.service.j2
+    dest: "{{ vault_service }}"
+  notify: 
+    - reload daemon
+    - Start vault

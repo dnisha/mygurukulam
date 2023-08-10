@@ -13,3 +13,6 @@ Unseal Key 4: pb1yM0MYVmwaeZHNfDWZYUFL+z+4RjsGGzWJIPkF9L+E
 Unseal Key 5: tmmXBdLUZJdPef0xN6BtoQW2Bn5xsZCLYazEhHlVRxwk
 
 Initial Root Token: hvs.OuUmOmNqTpgvJTcQKP4C8nqr
+
+rm -rf /opt/vault/data/*
+
