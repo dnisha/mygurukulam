@@ -4,6 +4,6 @@
   listen: "reload daemon"
 
 - name: Start vault
-  ansible.builtin.service:
+  service:
     name: vault
     state: started

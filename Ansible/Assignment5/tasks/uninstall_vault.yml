@@ -1,0 +1,25 @@
+- block: 
+  - name: Stopping vault
+    service:
+      name: vault
+      state: stopped
+
+  - name: Removing vault binary
+    file:
+      path: "{{ vault_binary }}/vault"
+      state: absent
+
+  - name: Removing vault config file 
+    file:
+      path: "{{ vault_cfg }}"
+      state: absent
+
+  - name: Removing vault service file 
+    file:
+      path: "{{ vault_service }}"
+      state: absent 
+  when: vault_operation == "uninstall"
+  rescue:
+    - name: Handle error gracefully
+      debug:
+        msg: "An error occurred during Vault removal tasks."

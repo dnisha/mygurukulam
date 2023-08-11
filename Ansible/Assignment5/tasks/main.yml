@@ -4,3 +4,5 @@
 
 - include_tasks: create_keys.yml
 
+- include_tasks: uninstall_vault.yml
+
