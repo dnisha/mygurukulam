@@ -34,7 +34,7 @@
     group: "{{ vault_group }}"
     mode: 0755
   register: vault_download
-  when: vault_operation == "install"
+  when: (vault_operation == "install" or vault_operation == "update")
 
 - name: Unzip vault archive
   unarchive:
@@ -45,26 +45,26 @@
     copy: no
     mode: 0755
   register: vault_unzip
-  when: vault_operation == "install"
+  when: (vault_operation == "install" or vault_operation == "update")
 
 - name: Create vault dir file 
   file:
     path: /etc/vault
     state: directory
-  when: vault_operation == "install"
+  when: (vault_operation == "install" or vault_operation == "update")
     
 - name: Create vault file  
   file:
     path: "{{ vault_cfg }}"
     state: touch
-  when: vault_operation == "install"
+  when: (vault_operation == "install" or vault_operation == "update")
 
 - name: Create directory for storage backend
   file:
     path: /opt/vault/data
     state: directory
     recurse: yes
-  when: vault_operation == "install"
+  when: (vault_operation == "install" or vault_operation == "update")
 
 - name: Copying configuration file
   copy:
@@ -73,7 +73,7 @@
   notify: 
     - reload daemon
     - Start vault
-  when: vault_operation == "install"
+  when: (vault_operation == "install" or vault_operation == "update")
 
 - name: Copying unit service file
   template:
@@ -82,4 +82,4 @@
   notify: 
     - reload daemon
     - Start vault
-  when: vault_operation == "install"
+  when: (vault_operation == "install" or vault_operation == "update")

@@ -1,8 +1,8 @@
 ---
 - name: Deploy vault
-  include_tasks: deploy_vault.yml
+  include_tasks: uninstall_vault.yml
+  
+- include_tasks: deploy_vault.yml
 
 - include_tasks: create_keys.yml
-
-- include_tasks: uninstall_vault.yml
 
