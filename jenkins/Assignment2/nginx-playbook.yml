@@ -1,0 +1,23 @@
+---
+- name: Deploy nginx application
+  hosts: web
+  remote_user: ubuntu
+  become_user: root
+  gather_facts: True
+  tasks:
+
+    - name: Update all packages to their latest version
+      apt:
+        update_cache: yes
+      become: yes
+
+    - name: Install Nginx 
+      apt:
+        name: nginx
+        state: present
+
+    - name: Copy html file
+      copy:
+        src: index.nginx-debian.html
+        dest: /var/www/html/index.nginx-debian.html
+      become: yes
