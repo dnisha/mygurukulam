@@ -1,0 +1,59 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', credentialsId: 'github', url: 'https://github.com/dnisha/spring3hibernate.git'
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                
+                sh 'mvn clean package'
+            }
+        }
+        
+        stage('Unit Tests') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+        
+        stage('Static Code Analysis') {
+            steps {
+                sh 'mvn checkstyle:checkstyle'
+            }
+        }
+        
+        stage('Integration Tests') {
+            steps {
+                sh 'mvn integration-test'
+            }
+        }
+        
+        stage('Deploy') {
+            
+            steps {
+            
+            script {
+            def workspace = env.WORKSPACE
+            warfile = "$workspace/target/Spring3HibernateApp.war"
+            echo "war file path: $warfile"
+            
+            sh "sed -i \"s|WAR_FILE_LOCATION|$warfile|g\" springPlaybook.yml"
+            }
+        
+            ansiblePlaybook become: true, credentialsId: 'ansible-node', installation: 'ansible', inventory: '/var/lib/jenkins/inventory', playbook: 'springPlaybook.yml'
+            }
+        
+        }
+    }
+    
+    post {
+        always {
+            archiveArtifacts artifacts: '**/target/*.war', allowEmptyArchive: true
+        }
+    }
+}
