@@ -15,3 +15,17 @@ Assignment 5:
 
 https://github.com/opstree/spring3hibernate
 https://github.com/opstree/OT-Microservices
+
+
+Solution : -
+
+step1 - Setup sonarqube with postgresql link - https://www.vultr.com/docs/how-to-use-sonarqube-on-ubuntu-22-04-lts/
+step2 -  generate token on sonarqube for integration with jenkins
+step3 - install sonarqube plugin on jenkins
+    note - t2.medium recommended
+step4 -  add the jcoco plugin 
+    link - https://www.baeldung.com/sonarqube-jacoco-code-coverage
+step5 - setup nexus 
+    link - https://www.fosstechnix.com/how-to-install-nexus-repository-on-ubuntu/
+    note - t2.medium recommended
+

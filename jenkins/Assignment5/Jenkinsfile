@@ -1,0 +1,85 @@
+pipeline {
+    agent any
+
+    parameters {
+        booleanParam(name: 'SKIP_STABILITY', defaultValue: false, description: 'Skip Code Stability Stage')
+        booleanParam(name: 'SKIP_QUALITY', defaultValue: false, description: 'Skip Code Quality Stage')
+        booleanParam(name: 'SKIP_COVERAGE', defaultValue: false, description: 'Skip Code Coverage Stage')
+    }
+    
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main', credentialsId: 'github', url: 'https://github.com/dnisha/spring3hibernate.git'
+            }
+        }
+       
+       stage('Run Parallel Stages') {
+
+        parallel {
+
+            stage('Code Stability') {
+
+                when {
+                        expression { !params.SKIP_STABILITY }
+                    }
+
+                steps {
+                    sh 'mvn test'
+                }
+            }
+        
+            stage('Code Quality Analysis') {
+
+                when {
+                        expression { !params.SKIP_QUALITY }
+                    }
+
+                steps {
+
+                    withSonarQubeEnv('sonarqube-9.6.1') {
+                    sh 'mvn sonar:sonar -Dsonar.projectKey=spring3Hibernate '
+                    }
+                }
+            }
+        
+            stage('Code Coverage Analysis') {
+
+                when {
+                        expression { !params.SKIP_COVERAGE }
+                    }
+
+                steps {
+
+                    sh 'mvn jacoco:report'
+                }
+            }
+
+            
+        }
+        }
+
+        stage('Publish artifacts') {
+            steps {
+                nexusArtifactUploader artifacts: [[
+                    artifactId: 'Spring3HibernateApp',
+                    classifier: '', file: 'target/Spring3HibernateApp.war',
+                    type: 'war'
+                    ]], 
+                    credentialsId: 'nexus',
+                    groupId: 'Spring3HibernateApp', nexusUrl: '10.0.15.96:8081', 
+                    nexusVersion: 'nexus3', 
+                    protocol: 'http', 
+                    repository: 'spring3hibernate', 
+                    version: '4.0.0'
+            }
+        }
+    }
+    
+    post {
+        always {
+            archiveArtifacts artifacts: '**/target/*.war', allowEmptyArchive: true
+        }
+    }
+}

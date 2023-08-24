@@ -26,6 +26,14 @@ pipeline {
                 sh 'mvn checkstyle:checkstyle'
             }
         }
+
+        stage('Code Quality Analysis') {
+            steps {
+                withSonarQubeEnv('sonarqube-9.6.1') {
+                    sh 'mvn sonar:sonar -Dsonar.projectKey=spring3Hibernate '
+                }
+            }
+        }
         
         stage('Integration Tests') {
             steps {
