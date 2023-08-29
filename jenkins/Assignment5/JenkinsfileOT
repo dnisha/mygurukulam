@@ -1,0 +1,123 @@
+node {
+    
+    properties([parameters([
+        booleanParam(defaultValue: true, description: 'Skip Code Stability Stage', name: 'SKIP_STABILITY'),
+        booleanParam(defaultValue: false, description: 'Skip Code Quality Stage', name: 'SKIP_QUALITY'),
+        booleanParam(defaultValue: false, description: 'Skip Code Coverage Stage', name: 'SKIP_COVERAGE')
+    ])])
+    
+    stage('Checkout') { 
+        git branch: 'main', url: 'https://github.com/dnisha/OT-MICROSERVICES.git'
+    }
+
+    stage('CI for Salary') {
+        parallel([
+            codeStability: {
+                def workspace = env.WORKSPACE
+                dir("$workspace/salary") {
+                if(params.SKIP_STABILITY == true){  
+                echo "Skip Code Stability Stage"
+                } else {
+                sh 'mvn test'
+                }
+                }
+            },
+            codeQualityAnalysis: {
+                def workspace = env.WORKSPACE
+                dir("$workspace/salary") {
+                if(params.SKIP_QUALITY == true){  
+                echo "Skip Code Quality Stage"
+                } else {
+                withSonarQubeEnv('sonarqube-9.6.1') {
+                    sh 'mvn sonar:sonar -Dsonar.projectKey=salary'
+                    }
+                }
+                }
+            },
+            codeCoverageAnalysis: {
+                def workspace = env.WORKSPACE
+                dir("$workspace/salary") {
+                if(params.SKIP_COVERAGE == true){  
+                echo "Skip Code Coverage Stage"
+                } else {
+                sh 'mvn jacoco:report'
+                }
+            }
+            }
+        ])
+    }
+
+    stage('CI for Employee') {
+        parallel([
+            codeStability: {
+                def workspace = env.WORKSPACE
+                dir("$workspace/employee") {
+                if(params.SKIP_STABILITY == true){  
+                echo "Skip Code Stability Stage"
+                } else {
+                sh 'go build'
+                sh 'go test . -cover'
+                }
+                }
+            },
+            codeQualityAnalysis: {
+                def workspace = env.WORKSPACE
+                dir("$workspace/employee") {
+                if(params.SKIP_QUALITY == true){  
+                echo "Skip Code Quality Stage"
+                } else {
+                withSonarQubeEnv('sonarqube-9.6.1') {
+                sh 'sonar.projectName=Employee microservice'
+                sh 'sonar.sources=.'
+                sh 'sonar.exclusions=**/*.test.go,**/*_test.go'
+                }
+                }
+                }
+            },
+            codeCoverageAnalysis: {
+                def workspace = env.WORKSPACE
+                dir("$workspace/employee") {
+                if(params.SKIP_COVERAGE == true){  
+                echo "Skip Code Coverage Stage"
+                } else {
+                sh 'go test . -coverprofile=cov.out'
+                sh 'go tool cover -html=cov.out'
+                }
+                }
+            }
+        ])
+    }
+
+    stage('Approval') {
+        input 'Upload artifact?'
+    }
+
+    stage('Publish artifacts') { 
+         nexusArtifactUploader artifacts: [[
+                    artifactId: 'Spring3HibernateApp',
+                    classifier: '', file: 'target/Spring3HibernateApp.war',
+                    type: 'war'
+                    ]], 
+                    credentialsId: 'nexus',
+                    groupId: 'Spring3HibernateApp', nexusUrl: '10.0.15.96:8081', 
+                    nexusVersion: 'nexus3', 
+                    protocol: 'http', 
+                    repository: 'spring3hibernate', 
+                    version: '4.0.0'
+    }
+
+    post {
+
+        always {
+            script {
+                currentBuild.result = currentBuild.resultIsBetterOrEqualTo('SUCCESS') ? 'SUCCESS' : 'FAILURE'
+                slackSend(
+                    color: currentBuild.result == 'SUCCESS' ? 'good' : 'danger',
+                    message: "Build ${currentBuild.result}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' - ${env.BUILD_URL}"
+                )
+            }
+        }  
+
+    }
+ 
+}

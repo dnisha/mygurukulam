@@ -1,0 +1,73 @@
+node {
+    
+    properties([parameters([
+        booleanParam(defaultValue: true, description: 'Skip Code Stability Stage', name: 'SKIP_STABILITY'),
+        booleanParam(defaultValue: false, description: 'Skip Code Quality Stage', name: 'SKIP_QUALITY'),
+        booleanParam(defaultValue: false, description: 'Skip Code Coverage Stage', name: 'SKIP_COVERAGE')
+    ])])
+    
+    stage('Checkout') { 
+        git branch: 'main', credentialsId: 'github', url: 'https://github.com/dnisha/spring3hibernate.git'
+    }
+
+    stage('Run Parallel Stages') {
+        parallel([
+            codeStability: {
+                if(params.SKIP_STABILITY == true){  
+                echo "Skip Code Stability Stage"
+                } else {
+                sh 'mvn test'
+                }
+            },
+            codeQualityAnalysis: {
+                if(params.SKIP_QUALITY == true){  
+                echo "Skip Code Quality Stage"
+                } else {
+                withSonarQubeEnv('sonarqube-9.6.1') {
+                    sh 'mvn sonar:sonar -Dsonar.projectKey=spring3Hibernate '
+                    }
+                }
+            },
+            codeCoverageAnalysis: {
+                if(params.SKIP_COVERAGE == true){  
+                echo "Skip Code Coverage Stage"
+                } else {
+                sh 'mvn jacoco:report'
+                }
+            }
+        ])
+    }
+
+    stage('Approval') {
+        input 'Upload artifact?'
+    }
+
+    stage('Publish artifacts') { 
+         nexusArtifactUploader artifacts: [[
+                    artifactId: 'Spring3HibernateApp',
+                    classifier: '', file: 'target/Spring3HibernateApp.war',
+                    type: 'war'
+                    ]], 
+                    credentialsId: 'nexus',
+                    groupId: 'Spring3HibernateApp', nexusUrl: '10.0.15.96:8081', 
+                    nexusVersion: 'nexus3', 
+                    protocol: 'http', 
+                    repository: 'spring3hibernate', 
+                    version: '4.0.0'
+    }
+
+    post {
+
+        always {
+            script {
+                currentBuild.result = currentBuild.resultIsBetterOrEqualTo('SUCCESS') ? 'SUCCESS' : 'FAILURE'
+                slackSend(
+                    color: currentBuild.result == 'SUCCESS' ? 'good' : 'danger',
+                    message: "Build ${currentBuild.result}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' - ${env.BUILD_URL}"
+                )
+            }
+        }  
+
+    }
+ 
+}

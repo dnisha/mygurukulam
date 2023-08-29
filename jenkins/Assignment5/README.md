@@ -29,3 +29,5 @@ step5 - setup nexus
     link - https://www.fosstechnix.com/how-to-install-nexus-repository-on-ubuntu/
     note - t2.medium recommended
 
+export CONFIG_FILE="/Users/deepaknishad/OT-Microservices/attendance/config.yaml"
+export CONFIG_FILE="env.WORKSPACE/employee/config.yaml"
