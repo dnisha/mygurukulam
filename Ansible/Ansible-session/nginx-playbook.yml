@@ -1,0 +1,26 @@
+---
+- name: Deploy nginx application
+  hosts: web
+  remote_user: ubuntu
+  gather_facts: True
+  tasks:
+
+    - name: Update all packages to their latest version
+      apt:
+        update_cache: yes
+
+    - name: Install Nginx 
+      apt:
+        name: nginx
+        state: present
+
+    - name: Increase and Inject iteration number
+      lineinfile:
+        path: /var/www/html/index.nginx-debian.html
+        regexp: '.*Current iteration.*'
+        line: '       <p>Current iteration: {{ iteration_number }}</p>'
+      loop: "{{ range(1, 11) }}"
+      loop_control:
+        loop_var: iteration_number
+        extended: yes
+        pause: 5

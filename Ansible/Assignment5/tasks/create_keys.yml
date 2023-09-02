@@ -38,7 +38,7 @@
       dest: "{{root_token_dir_output}}/rootkey"
     delegate_to: localhost
     ignore_errors: true
-  when: vault_initialized_process == true
+  when: vault_initialized_process == true and (vault_operation == "install" or vault_operation == "update")
   rescue:
     - name: Handle error gracefully
       debug:

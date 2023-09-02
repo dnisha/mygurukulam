@@ -1,0 +1,57 @@
+- name: Install unzip on Debian
+  apt:
+    name: unzip
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Install unzip on RedHat
+  yum:
+    name: unzip
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Download binary
+  get_url:
+    url: https://releases.hashicorp.com/consul/1.14.4/consul_1.14.4_linux_amd64.zip
+    dest: /tmp/consul_1.14.4_linux_amd64.zip 
+    mode: 0755
+  register: consul_download
+  when: (consul_operation == "install" or consul_operation == "update")
+
+- name: Unzip consul archive
+  unarchive:
+    src: "{{ consul_download.dest }}"
+    dest: "{{ consul_binary }}"
+    copy: no
+    mode: 0755
+  when: (consul_operation == "install" or consul_operation == "update")
+
+- name: Create vault dir file 
+  file:
+    path: /etc/consul
+    state: directory
+  when: (consul_operation == "install" or consul_operation == "update")
+    
+- name: Create consul file  
+  file:
+    path: "{{ consul_cfg }}"
+    state: touch
+  when: (consul_operation == "install" or consul_operation == "update")
+
+- name: Copying configuration file
+  copy:
+    src: consul.json
+    dest: "{{ consul_cfg }}"
+  notify: 
+    - reload daemon
+    - Start consul
+  when: (consul_operation == "install" or consul_operation == "update")
+
+- name: Copying unit service file
+  template:
+    src: consul.service.j2
+    dest: "{{ consul_service }}"
+  notify: 
+    - reload daemon
+    - Start consul
+  when: (consul_operation == "install" or consul_operation == "update")

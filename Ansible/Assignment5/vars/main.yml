@@ -8,3 +8,9 @@ unseal_keys_dir_output: .
 root_token_dir_output: .
 vault_initialized_process: false
 vault_operation: uninstall
+
+
+consul_cfg: /etc/consul/consul.json
+consul_service: /etc/systemd/system/consul.service
+consul_binary: /bin
+consul_operation: install
