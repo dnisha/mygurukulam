@@ -1,9 +1,12 @@
 #!/bin/bash
 
+
+recreate () {
+    
 for i in {1..2}; do
 
 OLD_INSTANCE_ID=$(aws ec2 describe-instances \
-    --filters "Name=tag:instance,Values=avengerv1" "Name=instance-state-name,Values=stopped" \
+    --filters "Name=tag:instance,Values=avengerv1" "Name=instance-state-name,Values=running" \
     --query "Reservations[0].Instances[0].InstanceId" \
     --output text)
 
@@ -22,11 +25,11 @@ done
 for i in {1..2}; do
 
 INSTANCE_ID=$(aws ec2 run-instances \
-    --image-id "ami-0886910d55b5d025a" \
+    --image-id $AMI \
     --instance-type "t2.micro" \
     --key-name "server1" \
-    --subnet-id subnet-0f1a64e0ec816a4a2 \
-    --security-group-ids sg-004626cc12a4de3ce \
+    --subnet-id $SUBNET \
+    --security-group-ids $SECURITY_GROUP \
     --tag-specifications "ResourceType=instance,Tags=[{Key="instance",Value="avengerv2"}]" \
     --query "Instances[0].InstanceId" \
     --output text)
@@ -40,3 +43,5 @@ aws elbv2 register-targets \
     --targets Id=$INSTANCE_ID
     
 done
+
+}
