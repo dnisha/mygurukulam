@@ -3,7 +3,7 @@
   "VersionDescription": "Initial version",
   "LaunchTemplateData": {
     "InstanceType": "t2.micro",
-    "ImageId": "ami-0eea6a3f57b40ce5a",
+    "ImageId": "ami-0d3cba19653af9439",
     "KeyName": "gone-servers",
     "SecurityGroupIds": ["sg-09decdb19debd6a3a"],
     "BlockDeviceMappings": [
@@ -21,7 +21,7 @@
         "Tags": [
           {
             "Key": "instance",
-            "Value": "avengerv1v2"
+            "Value": "v2"
           }
         ]
       }

@@ -16,7 +16,7 @@ INSTANCE_IDS=$(aws ec2 describe-instances \
 for INSTANCE_ID in $INSTANCE_IDS; do
     echo "Terminating Instance of ID: ${INSTANCE_ID}"
     aws ec2 terminate-instances --instance-ids $INSTANCE_ID
-    sleep 30
+    sleep 45
 done
 
 aws autoscaling update-auto-scaling-group --auto-scaling-group-name Avenger-app-asg \
