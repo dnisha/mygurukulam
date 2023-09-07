@@ -1,5 +1,5 @@
 #!/bin/bash
-#source ./rolling-deploy.sh
+source ./rolling-deploy.sh
 source ./recreate-deploy.sh
 
 TARGET_GROUP_ARN="arn:aws:elasticloadbalancing:ap-south-1:313578065517:targetgroup/custom-app-tg/7e1bdb77409e0b9c"
@@ -14,8 +14,8 @@ echo "Deploying version, $newVersion"
 read -p "Enter the old version to replace: " oldVersion
 echo "Version to remove, $oldVersion"
 
-read -p "Enter AMI ID: " AMI
-echo "Using AMI, $AMI"
+#read -p "Enter AMI ID: " AMI
+#echo "Using AMI, $AMI"
 
 
 main () {
