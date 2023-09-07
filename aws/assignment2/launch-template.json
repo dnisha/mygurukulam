@@ -1,0 +1,19 @@
+{
+  "LaunchTemplateName": "MyLaunchTemplate",
+  "VersionDescription": "Initial version",
+  "LaunchTemplateData": {
+    "InstanceType": "t2.micro",
+    "ImageId": "ami-09c56d6b79eb6b6c0",
+    "KeyName": "gone-servers",
+    "SecurityGroupIds": ["sg-09decdb19debd6a3a"],
+    "BlockDeviceMappings": [
+      {
+        "DeviceName": "/dev/xvda",
+        "Ebs": {
+          "VolumeSize": 30,
+          "VolumeType": "gp2"
+        }
+      }
+    ]
+  }
+}

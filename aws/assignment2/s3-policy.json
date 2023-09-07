@@ -1,0 +1,15 @@
+{
+  "Version": "2012-10-17",
+  "Id": "ExamplePolicy01",
+  "Statement": [
+    {
+      "Sid": "EC2Access",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::313578065517:role/EC2-S3-frontend-img"
+      },
+      "Action": ["s3:GetObject"],
+      "Resource": ["arn:aws:s3:::frontend-app-img/*"]
+    }
+  ]
+}
