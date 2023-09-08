@@ -13,7 +13,7 @@ def index():
 def serve_image():
     try:
         bucket_name = 'frontend-app-img'
-        image_key = 'iron-man-ouqxo5w2b59h0042.jpeg'  # Replace with the actual S3 object key
+        image_key = 'iron-man-ouqxo5w2b59h0042.jpeg'  # Replacing with the actual S3 object key
 
         # Fetching the image from S3
         response = s3.get_object(Bucket=bucket_name, Key=image_key)

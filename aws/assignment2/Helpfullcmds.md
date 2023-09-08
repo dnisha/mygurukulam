@@ -1,5 +1,5 @@
 pip install gunicorn
-pip install gunicorn
+pip install flask
 gunicorn -b 0.0.0.0:8000 app:app 
 
 python app.py
