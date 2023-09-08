@@ -56,7 +56,7 @@ echo "$AMI_ID"
 
 echo "now creating launch template"
 gsed -i "s/\"ImageId\": \".*\"/\"ImageId\": \"$AMI_ID\"/" launch-template.json
-gsed -i "s/\"Value\": \".*\"/\"Value\": \"$newVersion\"/" launch-template.json
+gsed -i "s/\"Value\": \".*\"/\"Value\": \"avenger$newVersion\"/" launch-template.json
 
 aws ec2 create-launch-template --cli-input-json file://launch-template.json
 

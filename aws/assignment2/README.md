@@ -48,15 +48,15 @@ aws ec2 run-instances --image-id "ami-0b8323d51e0d7eff5" \
 
 aws autoscaling create-auto-scaling-group \
 --auto-scaling-group-name Avenger-app-asg \
---launch-template "LaunchTemplateName=MyLaunchTemplate,Version=1" \
---min-size 1 \
+--launch-template "LaunchTemplateName=Avengerapp,Version=1" \
+--min-size 2 \
 --max-size 5 \
---desired-capacity 2 \
+--desired-capacity 3 \
 --vpc-zone-identifier "subnet-04dffad7706297237","subnet-05b73760f13f91dca" \
 --availability-zones "ap-south-1a" "ap-south-1b" \
---default-cooldown 300 \
+--default-cooldown 70 \
 --health-check-type EC2 \
---health-check-grace-period 120 \
+--health-check-grace-period 60 \
 --tags "Key=Name,Value=MyAutoScalingGroup,PropagateAtLaunch=true"
 
 aws autoscaling attach-load-balancer-target-groups \
